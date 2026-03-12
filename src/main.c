@@ -73,6 +73,24 @@ void rmv(struct database *db) {
   free(db->data);
 }
 
+void printDb(struct database * db) {
+  char keyBuffer[BUFFERSIZE], valBuffer[BUFFERSIZE]; // To insert the null character.
+  uint64_t i = 0;
+  
+  while (i < db->size) {
+    uint8_t keySize = db->data[i];
+    uint8_t valSize = db->data[i + keySize + 1];
+
+    memcpy(keyBuffer, db->data + i + 1, keySize);
+    memcpy(valBuffer, db->data + i + keySize + 2, valSize);
+
+    keyBuffer[keySize] = '\0';
+    valBuffer[valSize] = '\0';
+
+    printf("%s %s\n", keyBuffer, valBuffer);
+    i += keySize + valSize + 2; 
+  }
+}
 
 int main() {
   printf("Initializing Database.");
@@ -106,8 +124,17 @@ int main() {
         } else {
           printf("%s: %s\n> ", key, value);
         }
+      } else if (strcmp(action, "PRNT") == 0) {
+        printf("KEY VALUE\n");
+        printDb(&db);
+        printf("> ");
       } else {
-        printf("Error: Command not found.\nAvailable Commands:\n  EXIT - exits;\n  ADD <key> <value> - adds a key to the dictionary;\n  GET <key> - returns the value associated with a key, if any;\n> ");
+        printf("Error: Command not found.\n"
+               "Available Commands:\n"
+               "EXIT - exits;\n"
+               "ADD <key> <value> - adds a key to the dictionary;\n"
+               "GET <key> - returns the value associated with a key, if any;\n"
+               "PRNT - prints all keys and pairs to the terminal.\n> ");
       }
     }
 
